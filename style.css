@@ -1,0 +1,52 @@
+body {
+    background-color: #f0f2f5; /* Light gray background */
+    color: #050505; /* Dark text color */
+    font-family: 'Arial', sans-serif; /* Facebook uses a clean sans-serif font */
+    font-weight: 400;
+    transition: all 0.3s ease;
+}
+
+.navbar {
+    background-color: #1877f2 !important; /* Facebook blue */
+    border-bottom: 1px solid #dfe3ee; /* Subtle border */
+}
+
+.navbar-brand,
+.nav-link {
+    color: #ffffff !important; /* White text for navbar links */
+}
+
+.nav-link:hover {
+    color: #dfe3ee !important; /* Light hover effect */
+}
+
+.nav-link.active {
+    color: #ffffff !important; /* Active link stays white */
+    font-weight: bold;
+}
+
+.container {
+    background-color: #ffffff; /* White container background */
+    border: 1px solid #dfe3ee; /* Light gray border */
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.btn-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background-color: #1877f2; /* Facebook blue */
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-toggle:hover {
+    background-color: #145dbf; /* Darker blue on hover */
+}

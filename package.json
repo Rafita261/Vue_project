@@ -1,0 +1,11 @@
+{
+  "name": "vue_project",
+  "version": "1.0.0",
+  "description": "Projet académique sur les technologies Frontend Javascript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Chriskely",
+  "license": "ISC"
+}
