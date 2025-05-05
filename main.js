@@ -4,13 +4,18 @@ const AddTeacher = {
             <h1 style="text-align: center; color: #333;">Ajouter un enseignant</h1>
             <form @submit.prevent="addTeacher" style="display: flex; flex-direction: column; gap: 15px;">
                 <div style="display: flex; flex-direction: column;">
-                    <label for="name" style="font-weight: bold; margin-bottom: 5px;">Nom :</label>
-                    <input type="text" id="name" v-model="newTeacher.name" required 
+                    <label for="nom" style="font-weight: bold; margin-bottom: 5px;">Nom :</label>
+                    <input type="text" id="nom" v-model="newTeacher.nom" required 
                         style="padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px;" />
                 </div>
                 <div style="display: flex; flex-direction: column;">
-                    <label for="subject" style="font-weight: bold; margin-bottom: 5px;">Matière :</label>
-                    <input type="text" id="subject" v-model="newTeacher.subject" required 
+                    <label for="nbheures" style="font-weight: bold; margin-bottom: 5px;">Nombre d'heures :</label>
+                    <input type="number" id="nbheures" v-model="newTeacher.nbheures" required 
+                        style="padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px;" />
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <label for="tauxhoraire" style="font-weight: bold; margin-bottom: 5px;">Taux horaire :</label>
+                    <input type="number" id="tauxhoraire" v-model="newTeacher.tauxhoraire" required 
                         style="padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px;" />
                 </div>
                 <button type="submit" 
@@ -23,35 +28,52 @@ const AddTeacher = {
     data() {
         return {
             newTeacher: {
-                name: '',
-                subject: ''
+                num_ens: null,
+                nom: '',
+                nbheures: '',
+                tauxhoraire: ''
             }
         };
     },
     methods: {
         async addTeacher() {
-            if (this.newTeacher.name && this.newTeacher.subject) {
-                try {
-                    const response = await fetch('http://localhost/vue_back/Controllers/enseignant.php/', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(this.newTeacher)
-                    });
-                    if (response.ok) {
-                        alert(`Enseignant ajouté : ${this.newTeacher.name} (${this.newTeacher.subject})`);
-                        this.newTeacher.name = '';
-                        this.newTeacher.subject = '';
-                    } else {
-                        alert('Erreur lors de l\'ajout de l\'enseignant.');
-                    }
-                } catch (error) {
-                    console.error('Erreur:', error);
-                    alert('Erreur de connexion au serveur.');
+            if (this.newTeacher.nom && this.newTeacher.nbheures && this.newTeacher.tauxhoraire) {
+            try {
+                const teacherData = {
+                num_ens: null, 
+                nom: this.newTeacher.nom,
+                nbheures: this.newTeacher.nbheures,
+                tauxhoraire: this.newTeacher.tauxhoraire
+                };
+                console.log(teacherData);
+                
+                const response = await fetch('http://localhost/vue_back/Controllers/index.php/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(teacherData)
+                });
+                if (response.ok) {
+                const result = await response.json();
+                if (result.error) {
+                    alert(result.error);
+                } else {
+                    alert(`Enseignant créé avec succès. Numéro: ${result.num_ens}`);
+                    this.newTeacher.num_ens = null;
+                    this.newTeacher.nom = '';
+                    this.newTeacher.nbheures = '';
+                    this.newTeacher.tauxhoraire = '';
                 }
+                } else {
+                alert('Erreur lors de l\'ajout de l\'enseignant.');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur de connexion au serveur.');
+            }
             } else {
-                alert('Veuillez remplir tous les champs.');
+            alert('Veuillez remplir tous les champs.');
             }
         }
     }
@@ -98,7 +120,7 @@ const ListAndUpdate = {
     methods: {
         async fetchTeachers() {
             try {
-                const response = await fetch('http://localhost/vue_back/Controllers/enseignant.php/');
+                const response = await fetch('http://localhost/vue_back/Controllers/index.php/enseignants');
                 if (response.ok) {
                     this.teachers = await response.json();
                 } else {
@@ -114,13 +136,14 @@ const ListAndUpdate = {
             const newTauxHoraire = prompt(`Nouveau taux horaire pour ${teacher.nom}:`, teacher.tauxhoraire);
             if (newNbHeures && newTauxHoraire) {
                 try {
-                    const response = await fetch(`http://localhost/vue_back/Controllers/enseignant.php/${teacher.num_ens}`, {
+                    const response = await fetch(`http://localhost/vue_back/Controllers/index.php/update`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({ 
-                            ...teacher, 
+                            num_ens: teacher.num_ens,
+                            nom: teacher.nom,
                             nbheures: newNbHeures, 
                             tauxhoraire: newTauxHoraire 
                         })
@@ -142,7 +165,7 @@ const ListAndUpdate = {
         async deleteTeacher(num_ens) {
             if (confirm('Êtes-vous sûr de vouloir supprimer cet enseignant ?')) {
                 try {
-                    const response = await fetch(`http://localhost/vue_back/Controllers/enseignant.php/${num_ens}`, {
+                    const response = await fetch(`http://localhost/vue_back/Controllers/index.php/delete/${num_ens}`, {
                         method: 'DELETE'
                     });
                     if (response.ok) {
@@ -162,6 +185,7 @@ const ListAndUpdate = {
         this.fetchTeachers();
     }
 };
+
 const Home = {
     template: `
         <div style="text-align: center; padding: 20px;">
@@ -170,6 +194,7 @@ const Home = {
         </div>
     `
 };
+
 const Chart = {
     template: `
         <div style="text-align: center; padding: 20px;">
@@ -185,7 +210,7 @@ const Chart = {
     methods: {
         async fetchTeachers() {
             try {
-                const response = await fetch('http://localhost/vue_back/Controllers/enseignant.php/');
+                const response = await fetch('http://localhost/vue_back/Controllers/index.php/enseignants');
                 if (response.ok) {
                     this.teachers = await response.json();
                     this.renderChart();
@@ -228,10 +253,11 @@ const Chart = {
         this.fetchTeachers();
     }
 };
+
 const routes = [
     { path: '/', component: Home },
     { path: '/chart', component: Chart },
-    { path: '/add-teacher', component: AddTeacher },
+    { path: '/create', component: AddTeacher },
     { path: '/list-update', component: ListAndUpdate }
 ];
 
